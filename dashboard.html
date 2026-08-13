@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Hydroponics Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+font-family:Arial;
+background:#111827;
+color:white;
+text-align:center;
+}
+
+canvas{
+background:white;
+border-radius:10px;
+margin:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>AI Hydroponics Dashboard</h1>
+
+<canvas id="tempChart"></canvas>
+<canvas id="humidityChart"></canvas>
+<canvas id="moistureChart"></canvas>
+
+<script>
+
+let labels=[]
+let temp=[]
+let humidity=[]
+let moisture=[]
+
+const tempChart=new Chart(document.getElementById("tempChart"),{
+type:"line",
+data:{
+labels:labels,
+datasets:[{label:"Temperature",data:temp,borderColor:"red"}]
+}
+})
+
+const humidityChart=new Chart(document.getElementById("humidityChart"),{
+type:"line",
+data:{
+labels:labels,
+datasets:[{label:"Humidity",data:humidity,borderColor:"blue"}]
+}
+})
+
+const moistureChart=new Chart(document.getElementById("moistureChart"),{
+type:"line",
+data:{
+labels:labels,
+datasets:[{label:"Moisture",data:moisture,borderColor:"green"}]
+}
+})
+
+async function update(){
+
+let res=await fetch("http://127.0.0.1:5000/data")
+let data=await res.json()
+
+let time=new Date().toLocaleTimeString()
+
+labels.push(time)
+temp.push(data.temperature)
+humidity.push(data.humidity)
+moisture.push(data.moisture)
+
+if(labels.length>20){
+labels.shift()
+temp.shift()
+humidity.shift()
+moisture.shift()
+}
+
+tempChart.update()
+humidityChart.update()
+moistureChart.update()
+
+}
+
+setInterval(update,2000)
+
+</script>
+
+</body>
+</html>
